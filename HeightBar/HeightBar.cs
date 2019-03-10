@@ -10,6 +10,7 @@ namespace HeightBar
 {
     [BepInPlugin("HeightBar", "HeightBarX", Version)]
     [BepInDependency(KoikatuAPI.GUID)]
+    [BepInProcess("Koikatu")]
     public class HeightBar : BaseUnityPlugin
     {
         internal const string Version = "2.0";
