@@ -1,3 +1,4 @@
+![preview](https://user-images.githubusercontent.com/39247311/54090939-12ae6180-437a-11e9-91d2-08393de81af0.png)
 # Koikatsu HeightBar
 Plugin for Koikatu! character maker that allows measuring of the character's height in centimeters. It makes it easier to have consistent height of your characters and to more closely reproduce existing characters.
 
