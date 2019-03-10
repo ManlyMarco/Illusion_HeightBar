@@ -5,11 +5,11 @@ using KKAPI.Maker;
 using KKAPI.Maker.UI.Sidebar;
 using UniRx;
 using UnityEngine;
-using Scene = Manager.Scene;
 
 namespace HeightBar
 {
     [BepInPlugin("HeightBar", "HeightBarX", Version)]
+    [BepInDependency(KoikatuAPI.GUID)]
     public class HeightBar : BaseUnityPlugin
     {
         internal const string Version = "2.0";
@@ -20,7 +20,7 @@ namespace HeightBar
 
         private bool BarEnabled
         {
-            get => _barEnabled && _barObject != null && string.IsNullOrEmpty(Scene.Instance.AddSceneName);
+            get => _barEnabled && _barObject != null && string.IsNullOrEmpty(Manager.Scene.Instance.AddSceneName);
             set
             {
                 _barEnabled = value;
@@ -30,7 +30,7 @@ namespace HeightBar
                     Destroy(_barObject);
                     _barObject = null;
                 }
-                
+
                 if (!_barEnabled) return;
 
                 _barObject = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -40,18 +40,22 @@ namespace HeightBar
                 _barObject.layer = 12;
                 _barObject.name = "HeightBar indicator";
 
-                _targetObject = Camera.main.GetComponent<CameraControl_Ver2>()?.targetObj ?? Camera.main.transform;
+                var cam = Camera.main.GetComponent<CameraControl_Ver2>();
+                if (cam != null && cam.targetObj != null)
+                    _targetObject = cam.targetObj;
+                else
+                    _targetObject = Camera.main.transform;
             }
         }
 
         private GameObject _barObject;
         private bool _barEnabled;
-        
+
         private Transform _targetObject;
 
         private void Awake()
         {
-            if(!KoikatuAPI.CheckRequiredPlugin(this, KoikatuAPI.GUID, new Version(KoikatuAPI.VersionConst)))
+            if (!KoikatuAPI.CheckRequiredPlugin(this, KoikatuAPI.GUID, new Version(KoikatuAPI.VersionConst)))
                 return;
 
             _labelStyle.fontSize = 20;
