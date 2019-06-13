@@ -3,6 +3,7 @@ using BepInEx;
 using KKAPI;
 using KKAPI.Maker;
 using KKAPI.Maker.UI.Sidebar;
+using KKAPI.Studio;
 using UniRx;
 using UnityEngine;
 
@@ -10,10 +11,9 @@ namespace HeightBar
 {
     [BepInPlugin("HeightBar", "HeightBarX", Version)]
     [BepInDependency(KoikatuAPI.GUID)]
-    [BepInProcess("Koikatu")]
     public class HeightBar : BaseUnityPlugin
     {
-        internal const string Version = "2.0";
+        internal const string Version = "2.0.1";
         private const float Ratio = 103.092781f;
 
         private readonly GUIStyle _labelStyle = new GUIStyle();
@@ -58,6 +58,12 @@ namespace HeightBar
         {
             if (!KoikatuAPI.CheckRequiredPlugin(this, KoikatuAPI.GUID, new Version(KoikatuAPI.VersionConst)))
                 return;
+
+            if(StudioAPI.InsideStudio)
+            {
+                enabled = false;
+                return;
+            }
 
             _labelStyle.fontSize = 20;
             _labelStyle.normal.textColor = Color.white;
