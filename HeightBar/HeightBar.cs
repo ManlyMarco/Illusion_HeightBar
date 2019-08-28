@@ -21,7 +21,7 @@ namespace HeightBar
 
         private bool BarEnabled
         {
-            get => _barEnabled && _barObject != null && string.IsNullOrEmpty(Manager.Scene.Instance.AddSceneName);
+            get => _barEnabled && _barObject != null && !Manager.Scene.Instance.IsOverlap && Manager.Scene.Instance.AddSceneName != "Config";
             set
             {
                 _barEnabled = value;
@@ -56,8 +56,8 @@ namespace HeightBar
 
         private void Awake()
         {
-            if (!KoikatuAPI.CheckRequiredPlugin(this, KoikatuAPI.GUID, new Version(KoikatuAPI.VersionConst)))
-                return;
+            if (!KoikatuAPI.CheckRequiredPlugin(this, KoikatuAPI.GUID, new Version("1.4")))
+                    return;
 
             if(StudioAPI.InsideStudio)
             {
