@@ -17,7 +17,7 @@ namespace HeightBar
     [BepInDependency(ConfigurationManager.ConfigurationManager.GUID)]
     public class HeightBar : BaseUnityPlugin
     {
-        internal const string Version = "2.0.3";
+        internal const string Version = "3.0";
         private const float Ratio = 103.092781f;
 
         private readonly GUIStyle _labelStyle = new GUIStyle();
