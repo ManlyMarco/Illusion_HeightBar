@@ -28,6 +28,9 @@ namespace HeightBar
         
         private Transform _targetObject;
 
+        private Material barMaterial;
+        private Material zeroBarMaterial;
+
         [DisplayName("Show height bar at zero position")]
         private ConfigWrapper<bool> showZeroBar { get; set; }
         
@@ -74,6 +77,18 @@ namespace HeightBar
                 if (_zeroBarObject != null) 
                     _zeroBarObject.SetActive(showZeroBar.Value);
             };
+            
+            barAlpha.SettingChanged += delegate
+            {
+                if (barMaterial != null)
+                    barMaterial.color = new Color(1, 1, 1, barAlpha.Value);
+            };
+            
+            zeroBarAlpha.SettingChanged += delegate
+            {
+                if (zeroBarMaterial != null)
+                    zeroBarMaterial.color = new Color(1, 1, 1, zeroBarAlpha.Value);
+            };
 
             _labelStyle.fontSize = 20;
             _labelStyle.normal.textColor = Color.white;
@@ -109,25 +124,25 @@ namespace HeightBar
             _zeroBarObject = Instantiate(_barObject);
             _zeroBarObject.name = "zero HeightBar indicator";
 
-            Material mat = new Material(Shader.Find("Standard"));
-            if (mat != null)
+            barMaterial = new Material(Shader.Find("Standard"));
+            if (barMaterial != null)
             {
-                mat.SetOverrideTag("RenderType", "Transparent");
-                mat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-                mat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-                mat.SetInt("_ZWrite", 0);
-                mat.DisableKeyword("_ALPHATEST_ON");
-                mat.EnableKeyword("_ALPHABLEND_ON");
-                mat.DisableKeyword("_ALPHAPREMULTIPLY_ON");
-                mat.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
+                barMaterial.SetOverrideTag("RenderType", "Transparent");
+                barMaterial.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+                barMaterial.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+                barMaterial.SetInt("_ZWrite", 0);
+                barMaterial.DisableKeyword("_ALPHATEST_ON");
+                barMaterial.EnableKeyword("_ALPHABLEND_ON");
+                barMaterial.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+                barMaterial.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
                 
-                Material zMat = Instantiate(mat);
+                zeroBarMaterial = Instantiate(barMaterial);
                 
-                mat.SetColor("_Color", new Color(1, 1, 1, barAlpha.Value));
-                _barObject.GetComponent<Renderer>().material = mat;
+                barMaterial.color = new Color(1, 1, 1, barAlpha.Value);
+                _barObject.GetComponent<Renderer>().material = barMaterial;
                 
-                zMat.SetColor("_Color", new Color(1, 1, 1, zeroBarAlpha.Value));
-                _zeroBarObject.GetComponent<Renderer>().material = zMat;
+                zeroBarMaterial.color = new Color(1, 1, 1, zeroBarAlpha.Value);
+                _zeroBarObject.GetComponent<Renderer>().material = zeroBarMaterial;
             }
             
             _barObject.SetActive(false);
