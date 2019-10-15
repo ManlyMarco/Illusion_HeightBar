@@ -150,7 +150,7 @@ namespace HeightBar
             _labelRect.x = vector.x;
             _labelRect.y = Screen.height - vector.y;
 
-            GUI.Label(_labelRect, (_barObject.transform.localPosition.y * Ratio).ToString("F1") + "cm", _labelStyle);
+            ShadowAndOutline.DrawOutline(_labelRect, (_barObject.transform.localPosition.y * Ratio).ToString("F1") + "cm", _labelStyle, Color.white, Color.black, 2);
         }
     }
 }

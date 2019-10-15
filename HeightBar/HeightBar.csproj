@@ -66,6 +66,7 @@
   <ItemGroup>
     <Compile Include="HeightBar.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ShadowAndOutline.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
