@@ -35,11 +35,11 @@ namespace HeightBar
         private ConfigWrapper<bool> ShowZeroBar { get; set; }
 
         [DisplayName("Opacity of the measuring bar")]
-        [AcceptableValueRange(0f, 1f, false)]
+        [AcceptableValueRange(0f, 1f)]
         private ConfigWrapper<float> BarAlpha { get; set; }
 
         [DisplayName("Opacity of the floor bar")]
-        [AcceptableValueRange(0f, 1f, false)]
+        [AcceptableValueRange(0f, 1f)]
         private ConfigWrapper<float> ZeroBarAlpha { get; set; }
 
         private void Awake()
@@ -51,8 +51,8 @@ namespace HeightBar
             }
 
             ShowZeroBar = new ConfigWrapper<bool>("zero-bar-enabled", this, true);
-            BarAlpha = new ConfigWrapper<float>("height-bar-alpha", 0.5f);
-            ZeroBarAlpha = new ConfigWrapper<float>("zero-bar-alpha", 0.25f);
+            BarAlpha = new ConfigWrapper<float>("height-bar-alpha", 0.6f);
+            ZeroBarAlpha = new ConfigWrapper<float>("zero-bar-alpha", 0.5f);
 
             BarAlpha.SettingChanged += delegate
             {
