@@ -153,7 +153,7 @@ namespace HeightBar
 
         private void OnGUI()
         {
-            if (_barObject == null || !_barObject.activeSelf)
+            if (_barObject == null || !_barObject.activeSelf || !MakerAPI.IsInterfaceVisible())
                 return;
 
             var barPosition = _barObject.transform.position;
