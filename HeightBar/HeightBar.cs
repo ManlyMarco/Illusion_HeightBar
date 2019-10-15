@@ -1,12 +1,14 @@
 using System;
 using System.ComponentModel;
 using BepInEx;
+using BepInEx.Logging;
 using KKAPI;
 using KKAPI.Maker;
 using KKAPI.Maker.UI.Sidebar;
 using KKAPI.Studio;
 using UniRx;
 using UnityEngine;
+using Logger = BepInEx.Logger;
 
 namespace HeightBar
 {
@@ -21,134 +23,120 @@ namespace HeightBar
         private readonly GUIStyle _labelStyle = new GUIStyle();
         private Rect _labelRect = new Rect(400f, 400f, 100f, 100f);
 
-        private Camera mainCamera;
-        
+        private Camera _mainCamera;
+
         private GameObject _barObject;
         private GameObject _zeroBarObject;
-        
+
         private Transform _targetObject;
 
-        private Material barMaterial;
-        private Material zeroBarMaterial;
+        private Material _barMaterial;
+        private Material _zeroBarMaterial;
 
-        [DisplayName("Show height bar at zero position")]
-        private ConfigWrapper<bool> showZeroBar { get; set; }
-        
-        [DisplayName("Opacity of the height measuring bar")]
-        [AcceptableValueRange(0f, 1f, false)]
-        private ConfigWrapper<float> barAlpha { get; set; }
-        
-        [DisplayName("Opacity of the zero height position bar")]
-        [AcceptableValueRange(0f, 1f, false)]
-        private ConfigWrapper<float> zeroBarAlpha { get; set; }
-        
-        private void DestroyBars()
-        {
-            if (_barObject != null)
-            {
-                Destroy(_barObject);
-                _barObject = null;
-            }
+        [DisplayName("Show floor bar at character's feet")]
+        private ConfigWrapper<bool> ShowZeroBar { get; set; }
 
-            if (_zeroBarObject != null)
-            {
-                Destroy(_zeroBarObject);
-                _zeroBarObject = null;
-            }
-        }
+        [DisplayName("Opacity of the measuring bar")]
+        [AcceptableValueRange(0f, 1f, false)]
+        private ConfigWrapper<float> BarAlpha { get; set; }
+
+        [DisplayName("Opacity of the floor bar")]
+        [AcceptableValueRange(0f, 1f, false)]
+        private ConfigWrapper<float> ZeroBarAlpha { get; set; }
 
         private void Awake()
         {
-            if (!KoikatuAPI.CheckRequiredPlugin(this, KoikatuAPI.GUID, new Version("1.4")))
-                return;
-
-            if(StudioAPI.InsideStudio)
+            if (!KoikatuAPI.CheckRequiredPlugin(this, KoikatuAPI.GUID, new Version("1.5")) || StudioAPI.InsideStudio)
             {
                 enabled = false;
                 return;
             }
 
-            showZeroBar = new ConfigWrapper<bool>("show-zero-position", this, true);
-            barAlpha = new ConfigWrapper<float>("bar-alpha", 0.5f);
-            zeroBarAlpha = new ConfigWrapper<float>("zero-bar-alpha", 0.25f);
-            
-            showZeroBar.SettingChanged += delegate
+            ShowZeroBar = new ConfigWrapper<bool>("zero-bar-enabled", this, true);
+            BarAlpha = new ConfigWrapper<float>("height-bar-alpha", 0.5f);
+            ZeroBarAlpha = new ConfigWrapper<float>("zero-bar-alpha", 0.25f);
+
+            BarAlpha.SettingChanged += delegate
             {
-                if (_zeroBarObject != null) 
-                    _zeroBarObject.SetActive(showZeroBar.Value);
+                if (_barMaterial != null)
+                    _barMaterial.color = new Color(1, 1, 1, BarAlpha.Value);
             };
-            
-            barAlpha.SettingChanged += delegate
+
+            ZeroBarAlpha.SettingChanged += delegate
             {
-                if (barMaterial != null)
-                    barMaterial.color = new Color(1, 1, 1, barAlpha.Value);
+                if (_zeroBarMaterial != null)
+                    _zeroBarMaterial.color = new Color(1, 1, 1, ZeroBarAlpha.Value);
             };
-            
-            zeroBarAlpha.SettingChanged += delegate
+
+            ShowZeroBar.SettingChanged += delegate
             {
-                if (zeroBarMaterial != null)
-                    zeroBarMaterial.color = new Color(1, 1, 1, zeroBarAlpha.Value);
+                if (_zeroBarObject != null)
+                    _zeroBarObject.SetActive(ShowZeroBar.Value);
             };
 
             _labelStyle.fontSize = 20;
             _labelStyle.normal.textColor = Color.white;
 
-            MakerAPI.RegisterCustomSubCategories += MakerAPI_Enter;
-            MakerAPI.MakerExiting += MakerAPI_Exit;
+            MakerAPI.MakerBaseLoaded += MakerAPI_Enter;
+            MakerAPI.MakerExiting += (_, __) => OnDestroy();
         }
 
-        private void MakerAPI_Exit(object sender, EventArgs e)
+        private void MakerAPI_Enter(object sender, RegisterCustomControlsEvent e)
         {
-            DestroyBars();
-        }
+            _mainCamera = Camera.main;
 
-        private void MakerAPI_Enter(object sender, RegisterSubCategoriesEvent e)
-        {
-            mainCamera = Camera.main;
-            if (mainCamera == null)
-                return;
-            
-            var cam = mainCamera.GetComponent<CameraControl_Ver2>();
-            if (cam != null && cam.targetObj != null)
-                _targetObject = cam.targetObj;
+            var camControl = _mainCamera.GetComponent<CameraControl_Ver2>();
+            if (camControl != null && camControl.targetObj != null)
+                _targetObject = camControl.targetObj;
             else
-                _targetObject = mainCamera.transform;
-            
+                _targetObject = _mainCamera.transform;
+
             _barObject = GameObject.CreatePrimitive(PrimitiveType.Cube);
             _barObject.transform.SetParent(MakerAPI.GetCharacterControl().objRoot.transform, false);
             _barObject.transform.localScale = new Vector3(0.3f, 0.005f, 0.3f);
             _barObject.transform.localPosition = new Vector3(0f, 0f, 0f);
             _barObject.layer = 12;
-            _barObject.name = "HeightBar indicator";
+            _barObject.name = "Height bar indicator";
 
             _zeroBarObject = Instantiate(_barObject);
-            _zeroBarObject.name = "zero HeightBar indicator";
+            _zeroBarObject.name = "Floor bar indicator";
 
-            barMaterial = new Material(Shader.Find("Standard"));
-            if (barMaterial != null)
+            _barMaterial = new Material(Shader.Find("Standard"));
+            if (_barMaterial != null)
             {
-                barMaterial.SetOverrideTag("RenderType", "Transparent");
-                barMaterial.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-                barMaterial.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-                barMaterial.SetInt("_ZWrite", 0);
-                barMaterial.DisableKeyword("_ALPHATEST_ON");
-                barMaterial.EnableKeyword("_ALPHABLEND_ON");
-                barMaterial.DisableKeyword("_ALPHAPREMULTIPLY_ON");
-                barMaterial.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
-                
-                zeroBarMaterial = Instantiate(barMaterial);
-                
-                barMaterial.color = new Color(1, 1, 1, barAlpha.Value);
-                _barObject.GetComponent<Renderer>().material = barMaterial;
-                
-                zeroBarMaterial.color = new Color(1, 1, 1, zeroBarAlpha.Value);
-                _zeroBarObject.GetComponent<Renderer>().material = zeroBarMaterial;
+                _barMaterial.SetOverrideTag("RenderType", "Transparent");
+                _barMaterial.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+                _barMaterial.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+                _barMaterial.SetInt("_ZWrite", 0);
+                _barMaterial.DisableKeyword("_ALPHATEST_ON");
+                _barMaterial.EnableKeyword("_ALPHABLEND_ON");
+                _barMaterial.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+                _barMaterial.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
+
+                _zeroBarMaterial = Instantiate(_barMaterial);
+
+                _barMaterial.color = new Color(1, 1, 1, BarAlpha.Value);
+                _barObject.GetComponent<Renderer>().material = _barMaterial;
+
+                _zeroBarMaterial.color = new Color(1, 1, 1, ZeroBarAlpha.Value);
+                _zeroBarObject.GetComponent<Renderer>().material = _zeroBarMaterial;
             }
-            
+
             _barObject.SetActive(false);
-            _zeroBarObject.SetActive(showZeroBar.Value);
-            
+            _zeroBarObject.SetActive(ShowZeroBar.Value);
+
             e.AddSidebarControl(new SidebarToggle("Show height measure bar", false, this)).ValueChanged.Subscribe(b => _barObject.SetActive(b));
+        }
+
+        private void OnDestroy()
+        {
+            Destroy(_barObject);
+            _barObject = null;
+            _barMaterial = null;
+
+            Destroy(_zeroBarObject);
+            _zeroBarObject = null;
+            _zeroBarMaterial = null;
         }
 
         private void OnGUI()
@@ -160,7 +148,7 @@ namespace HeightBar
             barPosition = new Vector3(barPosition.x, _targetObject.position.y, barPosition.x);
             _barObject.transform.position = barPosition;
 
-            var vector = mainCamera.WorldToScreenPoint(barPosition + new Vector3(0.1f, 0f));
+            var vector = _mainCamera.WorldToScreenPoint(barPosition + new Vector3(0.1f, 0f));
             _labelRect.x = vector.x;
             _labelRect.y = Screen.height - vector.y;
 
