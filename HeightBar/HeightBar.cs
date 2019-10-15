@@ -1,14 +1,12 @@
 using System;
 using System.ComponentModel;
 using BepInEx;
-using BepInEx.Logging;
 using KKAPI;
 using KKAPI.Maker;
 using KKAPI.Maker.UI.Sidebar;
 using KKAPI.Studio;
 using UniRx;
 using UnityEngine;
-using Logger = BepInEx.Logger;
 
 namespace HeightBar
 {
