@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using BepInEx;
 using KKAPI;
 using KKAPI.Maker;
@@ -13,7 +13,7 @@ namespace HeightBar
     [BepInDependency(KoikatuAPI.GUID)]
     public class HeightBar : BaseUnityPlugin
     {
-        internal const string Version = "2.0.2";
+        internal const string Version = "2.0.3";
         private const float Ratio = 103.092781f;
 
         private readonly GUIStyle _labelStyle = new GUIStyle();
@@ -21,7 +21,7 @@ namespace HeightBar
 
         private bool BarEnabled
         {
-            get => _barEnabled && _barObject != null && !Manager.Scene.Instance.IsOverlap && Manager.Scene.Instance.AddSceneName != "Config";
+            get => _barEnabled && _barObject != null && _zeroBarObject != null && !Manager.Scene.Instance.IsOverlap && Manager.Scene.Instance.AddSceneName != "Config";
             set
             {
                 _barEnabled = value;
@@ -30,6 +30,12 @@ namespace HeightBar
                 {
                     Destroy(_barObject);
                     _barObject = null;
+                }
+                
+                if (_zeroBarObject != null)
+                {
+                    Destroy(_zeroBarObject);
+                    _zeroBarObject = null;
                 }
 
                 if (!_barEnabled) return;
@@ -41,6 +47,9 @@ namespace HeightBar
                 _barObject.layer = 12;
                 _barObject.name = "HeightBar indicator";
 
+                _zeroBarObject = Instantiate(_barObject);
+                _zeroBarObject.name = "zero HeightBar indicator";
+
                 var cam = Camera.main.GetComponent<CameraControl_Ver2>();
                 if (cam != null && cam.targetObj != null)
                     _targetObject = cam.targetObj;
@@ -50,6 +59,7 @@ namespace HeightBar
         }
 
         private GameObject _barObject;
+        private GameObject _zeroBarObject;
         private bool _barEnabled;
 
         private Transform _targetObject;
