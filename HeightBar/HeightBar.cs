@@ -139,11 +139,11 @@ namespace HeightBar
 
         private void OnGUI()
         {
-            if (_barObject == null || !_barObject.activeSelf || !MakerAPI.IsInterfaceVisible())
+            if (_barObject == null || !_barObject.activeSelf || (UnityEngine.SceneManagement.SceneManager.sceneCount != 1 && UnityEngine.SceneManagement.SceneManager.sceneCount != 5)) // 1-charamaker, 5-classmaker
                 return;
 
             var barPosition = _barObject.transform.position;
-            barPosition = new Vector3(barPosition.x, _targetObject.position.y, barPosition.x);
+            barPosition = new Vector3(barPosition.x, _targetObject.position.y, barPosition.z);
             _barObject.transform.position = barPosition;
 
             var vector = _mainCamera.WorldToScreenPoint(barPosition + new Vector3(0.1f, 0f));
