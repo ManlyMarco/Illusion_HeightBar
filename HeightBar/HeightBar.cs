@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using System.Reflection;
 using BepInEx;
 using Illusion.Extensions;
 using KKAPI;
@@ -44,6 +45,20 @@ namespace HeightBar
         [AcceptableValueRange(0f, 1f)]
         private ConfigWrapper<float> ZeroBarAlpha { get; set; }
 
+        private bool _forceHideBars;
+        public bool ForceHideBars
+        {
+            get => _forceHideBars;
+            set
+            {
+                if (_forceHideBars != value)
+                {
+                    _forceHideBars = value;
+                    Update();
+                }
+            }
+        }
+
         private void Awake()
         {
             if (!KoikatuAPI.CheckRequiredPlugin(this, KoikatuAPI.GUID, new Version("1.5")) || StudioAPI.InsideStudio)
@@ -79,6 +94,13 @@ namespace HeightBar
 
             MakerAPI.MakerBaseLoaded += MakerAPI_Enter;
             MakerAPI.MakerExiting += (_, __) => OnDestroy();
+
+            var t = Type.GetType("Screencap.ScreenshotManager, Screencap");
+            if (t != null)
+            {
+                t.GetEvent("OnPreCapture", BindingFlags.Static | BindingFlags.Public)?.AddEventHandler(null, new Action(() => ForceHideBars = true));
+                t.GetEvent("OnPostCapture", BindingFlags.Static | BindingFlags.Public)?.AddEventHandler(null, new Action(() => ForceHideBars = false));
+            }
         }
 
         private void MakerAPI_Enter(object sender, RegisterCustomControlsEvent e)
@@ -146,12 +168,9 @@ namespace HeightBar
         {
             if (_sidebarToggle != null)
             {
-                var visible = IsInterfaceVisible();
-                if(_zeroBarObject.activeSelf != visible)
-                {
-                    _zeroBarObject.SetActiveIfDifferent(visible && ShowZeroBar.Value);
-                    _barObject.SetActiveIfDifferent(visible && _sidebarToggle.Value);
-                }
+                var visible = IsInterfaceVisible() && !ForceHideBars;
+                _zeroBarObject.SetActiveIfDifferent(visible && ShowZeroBar.Value);
+                _barObject.SetActiveIfDifferent(visible && _sidebarToggle.Value);
             }
         }
 
@@ -161,7 +180,7 @@ namespace HeightBar
                 return;
 
             var barPosition = _barObject.transform.position;
-            barPosition = new Vector3(barPosition.x, _targetObject.position.y, barPosition.x);
+            barPosition = new Vector3(barPosition.x, _targetObject.position.y, barPosition.z);
             _barObject.transform.position = barPosition;
 
             var vector = _mainCamera.WorldToScreenPoint(barPosition + new Vector3(0.1f, 0f));
