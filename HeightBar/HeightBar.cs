@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using BepInEx;
+using Illusion.Extensions;
 using KKAPI;
 using KKAPI.Maker;
 using KKAPI.Maker.UI.Sidebar;
@@ -30,6 +31,7 @@ namespace HeightBar
 
         private Material _barMaterial;
         private Material _zeroBarMaterial;
+        private SidebarToggle _sidebarToggle;
 
         [DisplayName("Show floor bar at character's feet")]
         private ConfigWrapper<bool> ShowZeroBar { get; set; }
@@ -123,11 +125,14 @@ namespace HeightBar
             _barObject.SetActive(false);
             _zeroBarObject.SetActive(ShowZeroBar.Value);
 
-            e.AddSidebarControl(new SidebarToggle("Show height measure bar", false, this)).ValueChanged.Subscribe(b => _barObject.SetActive(b));
+            _sidebarToggle = e.AddSidebarControl(new SidebarToggle("Show height measure bar", false, this));
+            _sidebarToggle.ValueChanged.Subscribe(b => _barObject.SetActive(b));
         }
 
         private void OnDestroy()
         {
+            _sidebarToggle = null;
+
             Destroy(_barObject);
             _barObject = null;
             _barMaterial = null;
@@ -137,9 +142,22 @@ namespace HeightBar
             _zeroBarMaterial = null;
         }
 
+        private void Update()
+        {
+            if (_sidebarToggle != null)
+            {
+                var visible = IsInterfaceVisible();
+                if(_zeroBarObject.activeSelf != visible)
+                {
+                    _zeroBarObject.SetActiveIfDifferent(visible && ShowZeroBar.Value);
+                    _barObject.SetActiveIfDifferent(visible && _sidebarToggle.Value);
+                }
+            }
+        }
+
         private void OnGUI()
         {
-            if (_barObject == null || !_barObject.activeSelf || !MakerAPI.IsInterfaceVisible())
+            if (_barObject == null || !_barObject.activeSelf)
                 return;
 
             var barPosition = _barObject.transform.position;
@@ -151,6 +169,31 @@ namespace HeightBar
             _labelRect.y = Screen.height - vector.y;
 
             ShadowAndOutline.DrawOutline(_labelRect, (_barObject.transform.localPosition.y * Ratio).ToString("F1") + "cm", _labelStyle, Color.white, Color.black, 2);
+        }
+
+        private static bool IsInterfaceVisible()
+        {
+            // Check if maker is loaded
+            if (!MakerAPI.InsideMaker)
+                return false;
+            var mbase = MakerAPI.GetMakerBase();
+            if (mbase == null || mbase.chaCtrl == null)
+                return false;
+
+            // Check if the loading screen is currently visible
+            if (Manager.Scene.Instance.IsNowLoadingFade)
+                return false;
+
+            // Check if UI is hidden (by pressing space)
+            if (mbase.customCtrl.hideFrontUI)
+                return false;
+
+            // Check if settings screen, game exit message box or similar are on top of the maker UI
+            // In KK class maker the AddSceneName is set to CustomScene, but in normal maker it's empty
+            if (!string.IsNullOrEmpty(Manager.Scene.Instance.AddSceneName) && Manager.Scene.Instance.AddSceneName != "CustomScene")
+                return false;
+
+            return true;
         }
     }
 }
