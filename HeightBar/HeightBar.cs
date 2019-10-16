@@ -61,7 +61,7 @@ namespace HeightBar
 
         private void Awake()
         {
-            if (!KoikatuAPI.CheckRequiredPlugin(this, KoikatuAPI.GUID, new Version("1.5")) || StudioAPI.InsideStudio)
+            if (!KoikatuAPI.CheckRequiredPlugin(this, KoikatuAPI.GUID, new Version("1.4")) || StudioAPI.InsideStudio)
             {
                 enabled = false;
                 return;
@@ -187,7 +187,7 @@ namespace HeightBar
             _labelRect.x = vector.x;
             _labelRect.y = Screen.height - vector.y;
 
-            ShadowAndOutline.DrawOutline(_labelRect, (_barObject.transform.localPosition.y * Ratio).ToString("F1") + "cm", _labelStyle, Color.white, Color.black, 2);
+            ShadowAndOutline.DrawOutline(_labelRect, (_barObject.transform.localPosition.y * Ratio).ToString("F1") + "cm", _labelStyle, Color.white, Color.black, 1);
         }
 
         private static bool IsInterfaceVisible()
