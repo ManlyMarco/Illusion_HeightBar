@@ -1,7 +1,7 @@
 using System;
-using System.ComponentModel;
 using System.Reflection;
 using BepInEx;
+using BepInEx.Configuration;
 using Illusion.Extensions;
 using KKAPI;
 using KKAPI.Maker;
@@ -13,8 +13,7 @@ using UnityEngine;
 namespace HeightBar
 {
     [BepInPlugin("HeightBar", "HeightBarX", Version)]
-    [BepInDependency(KoikatuAPI.GUID)]
-    [BepInDependency(ConfigurationManager.ConfigurationManager.GUID)]
+    [BepInDependency(KoikatuAPI.GUID, "1.8")]
     public class HeightBar : BaseUnityPlugin
     {
         internal const string Version = "3.1";
@@ -34,16 +33,9 @@ namespace HeightBar
         private Material _zeroBarMaterial;
         private SidebarToggle _sidebarToggle;
 
-        [DisplayName("Show floor bar at character's feet")]
-        private ConfigWrapper<bool> ShowZeroBar { get; set; }
-
-        [DisplayName("Opacity of the measuring bar")]
-        [AcceptableValueRange(0f, 1f)]
-        private ConfigWrapper<float> BarAlpha { get; set; }
-
-        [DisplayName("Opacity of the floor bar")]
-        [AcceptableValueRange(0f, 1f)]
-        private ConfigWrapper<float> ZeroBarAlpha { get; set; }
+        private ConfigEntry<bool> ShowZeroBar { get; set; }
+        private ConfigEntry<float> BarAlpha { get; set; }
+        private ConfigEntry<float> ZeroBarAlpha { get; set; }
 
         private bool _forceHideBars;
         public bool ForceHideBars
@@ -67,9 +59,9 @@ namespace HeightBar
                 return;
             }
 
-            ShowZeroBar = new ConfigWrapper<bool>("zero-bar-enabled", this, true);
-            BarAlpha = new ConfigWrapper<float>("height-bar-alpha", 0.6f);
-            ZeroBarAlpha = new ConfigWrapper<float>("zero-bar-alpha", 0.5f);
+            ShowZeroBar = Config.Bind("Measure bars", "Show floor bar at character's feet", true, "Shows the position of the floor. Helps prevent floating characters when using yellow sliders.");
+            BarAlpha = Config.Bind("Measure bars", "Opacity of the measuring bar", 0.6f, new ConfigDescription("", new AcceptableValueRange<float>(0, 1)));
+            ZeroBarAlpha = Config.Bind("Measure bars", "Opacity of the floor bar", 0.5f, new ConfigDescription("", new AcceptableValueRange<float>(0, 1)));
 
             BarAlpha.SettingChanged += delegate
             {
