@@ -16,7 +16,7 @@ namespace HeightBar
     [BepInDependency(KoikatuAPI.GUID, "1.8")]
     public class HeightBar : BaseUnityPlugin
     {
-        internal const string Version = "3.1";
+        internal const string Version = "3.2";
         private const float Ratio = 103.092781f;
 
         private readonly GUIStyle _labelStyle = new GUIStyle();
