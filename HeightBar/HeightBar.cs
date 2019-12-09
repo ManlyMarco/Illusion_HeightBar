@@ -6,14 +6,15 @@ using Illusion.Extensions;
 using KKAPI;
 using KKAPI.Maker;
 using KKAPI.Maker.UI.Sidebar;
-using KKAPI.Studio;
 using UniRx;
 using UnityEngine;
 
 namespace HeightBar
 {
     [BepInPlugin("HeightBar", "HeightBarX", Version)]
-    [BepInDependency(KoikatuAPI.GUID, "1.8")]
+    [BepInProcess("Koikatu")]
+    [BepInProcess("Koikatsu Party")]
+    [BepInDependency(KoikatuAPI.GUID, "1.4")]
     public class HeightBar : BaseUnityPlugin
     {
         internal const string Version = "3.2";
@@ -53,12 +54,6 @@ namespace HeightBar
 
         private void Awake()
         {
-            if (!KoikatuAPI.CheckRequiredPlugin(this, KoikatuAPI.GUID, new Version("1.4")) || StudioAPI.InsideStudio)
-            {
-                enabled = false;
-                return;
-            }
-
             ShowZeroBar = Config.Bind("Measure bars", "Show floor bar at character's feet", true, "Shows the position of the floor. Helps prevent floating characters when using yellow sliders.");
             BarAlpha = Config.Bind("Measure bars", "Opacity of the measuring bar", 0.6f, new ConfigDescription("", new AcceptableValueRange<float>(0, 1)));
             ZeroBarAlpha = Config.Bind("Measure bars", "Opacity of the floor bar", 0.5f, new ConfigDescription("", new AcceptableValueRange<float>(0, 1)));
