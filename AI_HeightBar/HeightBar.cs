@@ -3,19 +3,17 @@ using System.Reflection;
 using BepInEx;
 using BepInEx.Configuration;
 using Illusion.Extensions;
+using KKAPI;
 using KKAPI.Maker;
-using KKAPI.Maker.UI.Sidebar;
 using KKAPI.Utilities;
-using UniRx;
 using UnityEngine;
 
 namespace HeightBar
 {
-    [BepInProcess("Koikatu")]
-    [BepInProcess("Koikatsu Party")]
+    [BepInProcess("AI-Syoujyo")]
     public partial class HeightBar : BaseUnityPlugin
     {
-        private const float Ratio = 103.092781f;
+        private float Ratio = 10.5f;
 
         private readonly GUIStyle _labelStyle = new GUIStyle();
         private Rect _labelRect = new Rect(400f, 400f, 100f, 100f);
@@ -29,11 +27,13 @@ namespace HeightBar
 
         private Material _barMaterial;
         private Material _zeroBarMaterial;
-        private SidebarToggle _sidebarToggle;
 
         private ConfigEntry<bool> _showZeroBar;
         private ConfigEntry<float> _barAlpha;
         private ConfigEntry<float> _zeroBarAlpha;
+
+        private bool _showBar;
+        private ConfigEntry<KeyboardShortcut> _barHotkey;
 
         private bool _forceHideBars;
         public bool ForceHideBars
@@ -51,7 +51,9 @@ namespace HeightBar
 
         private void Awake()
         {
+            _barHotkey = Config.Bind("General", "Toggle height measure bar", new KeyboardShortcut(KeyCode.H));
             _showZeroBar = Config.Bind("General", "Show floor bar at character`s feet", true, "Shows the position of the floor. Helps prevent floating characters when using yellow sliders.");
+
             _barAlpha = Config.Bind("Appearance", "Opacity of the measuring bar", 0.6f, new ConfigDescription("", new AcceptableValueRange<float>(0, 1)));
             _zeroBarAlpha = Config.Bind("Appearance", "Opacity of the floor bar", 0.5f, new ConfigDescription("", new AcceptableValueRange<float>(0, 1)));
 
@@ -89,11 +91,12 @@ namespace HeightBar
 
         private void MakerAPI_Enter(object sender, RegisterCustomControlsEvent e)
         {
+            _showBar = false;
             _mainCamera = Camera.main;
 
             var camControl = _mainCamera.GetComponent<CameraControl_Ver2>();
-            if (camControl != null && camControl.targetObj != null)
-                _targetObject = camControl.targetObj;
+            if (camControl != null && camControl.targetTex != null)
+                _targetObject = camControl.targetTex;
             else
                 _targetObject = _mainCamera.transform;
 
@@ -103,15 +106,13 @@ namespace HeightBar
 
             _barObject = Instantiate(origCube);
             _barObject.transform.SetParent(MakerAPI.GetCharacterControl().objRoot.transform, false);
-            _barObject.transform.localScale = new Vector3(0.3f, 0.005f, 0.3f);
+            _barObject.transform.localScale = new Vector3(3f, 0.02f, 3f);
             _barObject.transform.localPosition = new Vector3(0f, 0f, 0f);
-            _barObject.layer = 12;
+            _barObject.layer = 10;
             _barObject.name = "Height bar indicator";
 
             _zeroBarObject = Instantiate(_barObject);
             _zeroBarObject.name = "Floor bar indicator";
-
-            ab.Unload(false);
 
             _barMaterial = _barObject.GetComponent<Renderer>().material;
             _barMaterial.color = new Color(0, 0, 0, _barAlpha.Value);
@@ -122,14 +123,11 @@ namespace HeightBar
             _barObject.SetActive(false);
             _zeroBarObject.SetActive(_showZeroBar.Value);
 
-            _sidebarToggle = e.AddSidebarControl(new SidebarToggle("Show height measure bar", false, this));
-            _sidebarToggle.ValueChanged.Subscribe(b => _barObject.SetActive(b));
+            ab.Unload(false);
         }
 
         private void OnDestroy()
         {
-            _sidebarToggle = null;
-
             Destroy(_barObject);
             _barObject = null;
             _barMaterial = null;
@@ -141,11 +139,12 @@ namespace HeightBar
 
         private void Update()
         {
-            if (_sidebarToggle != null)
+            if (_barObject != null)
             {
-                var visible = IsInterfaceVisible() && !ForceHideBars;
+                if (_barHotkey.Value.IsDown()) _showBar = !_showBar;
+                var visible = MakerAPI.IsInterfaceVisible() && !ForceHideBars;
                 _zeroBarObject.SetActiveIfDifferent(visible && _showZeroBar.Value);
-                _barObject.SetActiveIfDifferent(visible && _sidebarToggle.Value);
+                _barObject.SetActiveIfDifferent(visible && _showBar);
             }
         }
 
@@ -159,35 +158,11 @@ namespace HeightBar
             _barObject.transform.position = barPosition;
 
             var vector = _mainCamera.WorldToScreenPoint(barPosition + new Vector3(0.1f, 0f));
-            _labelRect.x = vector.x;
-            _labelRect.y = Screen.height - vector.y;
+            // Clamp the last digit to deal with BetterAA shaking the screen
+            _labelRect.x = (int)(vector.x / 10) * 10;
+            _labelRect.y = (int)((Screen.height - vector.y) / 10) * 10;
 
             ShadowAndOutline.DrawOutline(_labelRect, (_barObject.transform.localPosition.y * Ratio).ToString("F1") + "cm", _labelStyle, Color.white, Color.black, 1);
-        }
-
-        private static bool IsInterfaceVisible()
-        {
-            // Check if maker is loaded
-            if (!MakerAPI.InsideMaker)
-                return false;
-            var mbase = MakerAPI.GetMakerBase();
-            if (mbase == null || mbase.chaCtrl == null)
-                return false;
-
-            // Check if the loading screen is currently visible
-            if (Manager.Scene.Instance.IsNowLoadingFade)
-                return false;
-
-            // Check if UI is hidden (by pressing space)
-            if (mbase.customCtrl.hideFrontUI)
-                return false;
-
-            // Check if settings screen, game exit message box or similar are on top of the maker UI
-            // In KK class maker the AddSceneName is set to CustomScene, but in normal maker it's empty
-            if (!string.IsNullOrEmpty(Manager.Scene.Instance.AddSceneName) && Manager.Scene.Instance.AddSceneName != "CustomScene")
-                return false;
-
-            return true;
         }
     }
 }
