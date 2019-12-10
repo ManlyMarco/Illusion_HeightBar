@@ -1,14 +1,16 @@
-![Preview](https://user-images.githubusercontent.com/39247311/66871566-32f36e00-efa4-11e9-8625-ddf9c0fcd8a7.png)
-# Koikatsu HeightBar
-Plugin for Koikatu! character maker that allows measuring of the character's height in centimeters. It makes it easier to have consistent height of your characters and to more closely reproduce existing characters.
+# HeightBar for Koikatsu and AI-Shoujo
+Plugin for Koikatu! and AI-Shoujo/AI-Girl character maker that allows measuring of the character's height in centimeters. It makes it easier to have consistent height of your characters and to more closely reproduce existing characters.
 
 Based on the original HeightBar plugin made by essu.
 
 ### How to use
-1. Make sure at least [BepInEx v4.1](https://github.com/BepInEx/BepInEx), [BepisPlugins r7](https://github.com/bbepis/BepisPlugins) and [KKAPI v1.5](https://github.com/ManlyMarco/KKAPI) are installed, and your game is updated.
+1. Make sure at least [BepInEx v5.0](https://github.com/BepInEx/BepInEx) and [KKAPI v1.9](https://github.com/ManlyMarco/KKAPI) are installed, and your game is updated.
 2. Download the latest release.
-3. Place the .dll inside your BepInEx folder, overwrite if asked.
-4. Start character maker. You should see a new checkbox in the bottom right corner.
+3. Extract the .dll inside your BepInEx/plugins folder, overwrite if asked.
+4. Start character maker. In Koikatsu you should see a new checkbox in the bottom right corner. In AI-Girl press H (press F1 to configure this keyboard shortcut).
 5. You can move the bar by moving the camera.
 
 *Note:* The height is measured from the character's origin point, which is almost always bottom of the feet. If you use ABMX to scale the feet, then this might stop being accurate. In that case check the 0 point and adjust your measurements as needed.
+
+![koikatsu Preview](https://user-images.githubusercontent.com/39247311/66871566-32f36e00-efa4-11e9-8625-ddf9c0fcd8a7.png)
+![ai-girl preview](https://user-images.githubusercontent.com/39247311/70565200-dd95a080-1b91-11ea-8a2d-02cbe324b018.PNG)
