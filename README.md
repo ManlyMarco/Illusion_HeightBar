@@ -12,5 +12,6 @@ Based on the original HeightBar plugin made by essu.
 
 *Note:* The height is measured from the character's origin point, which is almost always bottom of the feet. If you use ABMX to scale the feet, then this might stop being accurate. In that case check the 0 point and adjust your measurements as needed.
 
+## Screenshots
 ![koikatsu Preview](https://user-images.githubusercontent.com/39247311/66871566-32f36e00-efa4-11e9-8625-ddf9c0fcd8a7.png)
 ![ai-girl preview](https://user-images.githubusercontent.com/39247311/70565200-dd95a080-1b91-11ea-8a2d-02cbe324b018.PNG)
