@@ -29,6 +29,7 @@ namespace HeightBar
         private Material _zeroBarMaterial;
 
         private ConfigEntry<bool> _showZeroBar;
+        private ConfigEntry<bool> _useFeet;
         private ConfigEntry<float> _barAlpha;
         private ConfigEntry<float> _zeroBarAlpha;
 
@@ -53,6 +54,7 @@ namespace HeightBar
         {
             _barHotkey = Config.Bind("General", "Toggle height measure bar", new KeyboardShortcut(KeyCode.H));
             _showZeroBar = Config.Bind("General", "Show floor bar at character`s feet", true, "Shows the position of the floor. Helps prevent floating characters when using yellow sliders.");
+            _useFeet = Config.Bind("General", "Use freedom units", false, "A foot to the face.");
 
             _barAlpha = Config.Bind("Appearance", "Opacity of the measuring bar", 0.6f, new ConfigDescription("", new AcceptableValueRange<float>(0, 1)));
             _zeroBarAlpha = Config.Bind("Appearance", "Opacity of the floor bar", 0.5f, new ConfigDescription("", new AcceptableValueRange<float>(0, 1)));
@@ -162,7 +164,11 @@ namespace HeightBar
             _labelRect.x = (int)(vector.x / 10) * 10;
             _labelRect.y = (int)((Screen.height - vector.y) / 10) * 10;
 
-            ShadowAndOutline.DrawOutline(_labelRect, (_barObject.transform.localPosition.y * Ratio).ToString("F1") + "cm", _labelStyle, Color.white, Color.black, 1);
+            var value = _useFeet.Value
+                ? (_barObject.transform.localPosition.y * Ratio * 0.0328084f).ToString("F2") + "feet"
+                : (_barObject.transform.localPosition.y * Ratio).ToString("F1") + "cm";
+
+            ShadowAndOutline.DrawOutline(_labelRect, value, _labelStyle, Color.white, Color.black, 1);
         }
     }
 }
