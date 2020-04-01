@@ -36,6 +36,9 @@ namespace HeightBar
         private ConfigEntry<float> _barAlpha;
         private ConfigEntry<float> _zeroBarAlpha;
 
+        private bool _showBar;
+        private ConfigEntry<KeyboardShortcut> _barHotkey;
+
         private bool _forceHideBars;
         public bool ForceHideBars
         {
@@ -52,8 +55,10 @@ namespace HeightBar
 
         private void Awake()
         {
+            _barHotkey = Config.Bind("General", "Toggle height measure bar", KeyboardShortcut.Empty, "Hotkey to toggle the height measurement bar in maker.");
             _showZeroBar = Config.Bind("General", "Show floor bar at character`s feet", true, "Shows the position of the floor. Helps prevent floating characters when using yellow sliders.");
             _useFeet = Config.Bind("General", "Use freedom units", false, "A foot to the face.");
+            
             _barAlpha = Config.Bind("Appearance", "Opacity of the measuring bar", 0.6f, new ConfigDescription("", new AcceptableValueRange<float>(0, 1)));
             _zeroBarAlpha = Config.Bind("Appearance", "Opacity of the floor bar", 0.5f, new ConfigDescription("", new AcceptableValueRange<float>(0, 1)));
 
@@ -91,6 +96,7 @@ namespace HeightBar
 
         private void MakerAPI_Enter(object sender, RegisterCustomControlsEvent e)
         {
+            _showBar = false;
             _mainCamera = Camera.main;
 
             var camControl = _mainCamera.GetComponent<CameraControl_Ver2>();
@@ -125,7 +131,8 @@ namespace HeightBar
             _zeroBarObject.SetActive(_showZeroBar.Value);
 
             _sidebarToggle = e.AddSidebarControl(new SidebarToggle("Show height measure bar", false, this));
-            _sidebarToggle.ValueChanged.Subscribe(b => _barObject.SetActive(b));
+            _sidebarToggle.Value = _showBar;
+            _sidebarToggle.ValueChanged.Subscribe(b => _showBar = b);
         }
 
         private void OnDestroy()
@@ -143,11 +150,12 @@ namespace HeightBar
 
         private void Update()
         {
-            if (_sidebarToggle != null)
+            if (_barObject != null)
             {
-                var visible = IsInterfaceVisible() && !ForceHideBars;
+                if (_barHotkey.Value.IsDown()) _showBar = !_showBar;
+                var visible = MakerAPI.IsInterfaceVisible() && !ForceHideBars;
                 _zeroBarObject.SetActiveIfDifferent(visible && _showZeroBar.Value);
-                _barObject.SetActiveIfDifferent(visible && _sidebarToggle.Value);
+                _barObject.SetActiveIfDifferent(visible && _showBar);
             }
         }
 
