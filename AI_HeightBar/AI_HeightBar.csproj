@@ -7,7 +7,7 @@
     <ProjectGuid>{43881570-2458-41A8-86C7-E14D978F3CB4}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>AI_HeightBar</RootNamespace>
+    <RootNamespace>HeightBar</RootNamespace>
     <AssemblyName>AI_HeightBar</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -32,34 +32,38 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AIAPI, Version=1.9.5.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\IllusionModdingAPI.AIAPI.1.9.5\lib\net46\AIAPI.dll</HintPath>
+    <Reference Include="AIAPI, Version=1.10.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\IllusionModdingAPI.AIAPI.1.10.0\lib\net46\AIAPI.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\IllusionLibs.AIGirl.Assembly-CSharp.2019.11.29\lib\net46\Assembly-CSharp.dll</HintPath>
+      <HintPath>..\packages\IllusionLibs.AIGirl.Assembly-CSharp.2019.12.20\lib\net46\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="BepInEx, Version=5.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\IllusionLibs.BepInEx.5.0.0\lib\net46\BepInEx.dll</HintPath>
+    <Reference Include="BepInEx, Version=5.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\IllusionLibs.BepInEx.5.0.1.1\lib\net35\BepInEx.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="UniRx, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\IllusionLibs.AIGirl.UniRx.2019.12.20\lib\net46\UniRx.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\IllusionLibs.AIGirl.UnityEngine.CoreModule.2018.2.21\lib\net46\UnityEngine.dll</HintPath>
+      <HintPath>..\packages\IllusionLibs.AIGirl.UnityEngine.CoreModule.2018.2.21.1\lib\net46\UnityEngine.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.AssetBundleModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\IllusionLibs.AIGirl.UnityEngine.AssetBundleModule.2018.2.21\lib\net46\UnityEngine.AssetBundleModule.dll</HintPath>
+      <HintPath>..\packages\IllusionLibs.AIGirl.UnityEngine.AssetBundleModule.2018.2.21.1\lib\net46\UnityEngine.AssetBundleModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\IllusionLibs.AIGirl.UnityEngine.CoreModule.2018.2.21\lib\net46\UnityEngine.CoreModule.dll</HintPath>
+      <HintPath>..\packages\IllusionLibs.AIGirl.UnityEngine.CoreModule.2018.2.21.1\lib\net46\UnityEngine.CoreModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.IMGUIModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\IllusionLibs.AIGirl.UnityEngine.IMGUIModule.2018.2.21\lib\net46\UnityEngine.IMGUIModule.dll</HintPath>
+      <HintPath>..\packages\IllusionLibs.AIGirl.UnityEngine.IMGUIModule.2018.2.21.1\lib\net46\UnityEngine.IMGUIModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
