@@ -3,9 +3,10 @@ using System.Reflection;
 using BepInEx;
 using BepInEx.Configuration;
 using Illusion.Extensions;
-using KKAPI;
 using KKAPI.Maker;
+using KKAPI.Maker.UI.Sidebar;
 using KKAPI.Utilities;
+using UniRx;
 using UnityEngine;
 
 namespace HeightBar
@@ -27,6 +28,7 @@ namespace HeightBar
 
         private Material _barMaterial;
         private Material _zeroBarMaterial;
+        private SidebarToggle _sidebarToggle;
 
         private ConfigEntry<bool> _showZeroBar;
         private ConfigEntry<bool> _useFeet;
@@ -52,7 +54,7 @@ namespace HeightBar
 
         private void Awake()
         {
-            _barHotkey = Config.Bind("General", "Toggle height measure bar", new KeyboardShortcut(KeyCode.H));
+            _barHotkey = Config.Bind("General", "Toggle height measure bar", KeyboardShortcut.Empty, "Hotkey to toggle the height measurement bar in maker.");
             _showZeroBar = Config.Bind("General", "Show floor bar at character`s feet", true, "Shows the position of the floor. Helps prevent floating characters when using yellow sliders.");
             _useFeet = Config.Bind("General", "Use freedom units", false, "A foot to the face.");
 
@@ -126,10 +128,16 @@ namespace HeightBar
             _zeroBarObject.SetActive(_showZeroBar.Value);
 
             ab.Unload(false);
+
+            _sidebarToggle = e.AddSidebarControl(new SidebarToggle("Show height measure bar", false, this));
+            _sidebarToggle.Value = _showBar;
+            _sidebarToggle.ValueChanged.Subscribe(b => _showBar = b);
         }
 
         private void OnDestroy()
         {
+            _sidebarToggle = null;
+
             Destroy(_barObject);
             _barObject = null;
             _barMaterial = null;
