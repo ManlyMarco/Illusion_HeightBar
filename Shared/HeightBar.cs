@@ -7,6 +7,6 @@ namespace HeightBar
     [BepInDependency(KoikatuAPI.GUID, KoikatuAPI.VersionConst)]
     public partial class HeightBar
     {
-        internal const string Version = "3.2";
+        internal const string Version = "3.3";
     }
 }
