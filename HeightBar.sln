@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26228.4
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29806.167
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KK_HeightBar", "KK_HeightBar\KK_HeightBar.csproj", "{762BC9FF-86CC-4029-A141-77E972126EFE}"
 EndProject
@@ -9,9 +9,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AI_HeightBar", "AI_HeightBa
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Shared", "Shared\Shared.shproj", "{9F4B295B-536B-46ED-B6AE-24FB02BD28F3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EC_HeightBar", "EC_HeightBar\EC_HeightBar.csproj", "{64AEEC34-C5A2-4E74-988C-6DE26A63D9ED}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Shared\Shared.projitems*{43881570-2458-41a8-86c7-e14d978f3cb4}*SharedItemsImports = 4
+		Shared\Shared.projitems*{64aeec34-c5a2-4e74-988c-6de26a63d9ed}*SharedItemsImports = 4
 		Shared\Shared.projitems*{762bc9ff-86cc-4029-a141-77e972126efe}*SharedItemsImports = 4
 		Shared\Shared.projitems*{9f4b295b-536b-46ed-b6ae-24fb02bd28f3}*SharedItemsImports = 13
 	EndGlobalSection
@@ -28,6 +31,10 @@ Global
 		{43881570-2458-41A8-86C7-E14D978F3CB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{43881570-2458-41A8-86C7-E14D978F3CB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{43881570-2458-41A8-86C7-E14D978F3CB4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{64AEEC34-C5A2-4E74-988C-6DE26A63D9ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{64AEEC34-C5A2-4E74-988C-6DE26A63D9ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{64AEEC34-C5A2-4E74-988C-6DE26A63D9ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{64AEEC34-C5A2-4E74-988C-6DE26A63D9ED}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
