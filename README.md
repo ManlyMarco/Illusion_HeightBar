@@ -1,4 +1,4 @@
-# HeightBar for Koikatsu and AI-Shoujo
+# Height Measure Bar for games by Illusion
 Plugin for Koikatu!, Koikatsu Party, EmotionCreators and AI-Shoujo/AI-Syoujyo character maker that allows measuring of the character's height in centimeters. It makes it easier to have consistent height of your characters and to more closely reproduce existing characters.
 
 ### How to use
