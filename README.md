@@ -3,9 +3,9 @@ Plugin for Koikatu!, Koikatsu Party, EmotionCreators and AI-Shoujo/AI-Syoujyo ch
 
 ### How to use
 1. Make sure at least [BepInEx v5.0](https://github.com/BepInEx/BepInEx) and [KKAPI v1.10](https://github.com/ManlyMarco/KKAPI) are installed, and your game is updated.
-2. Download the latest release.
-3. Extract the .dll inside your BepInEx/plugins folder, overwrite if asked.
-4. Start character maker. In Koikatsu you should see a new checkbox in the bottom right corner.
+2. Download the latest release for your game.
+3. Extract the archive inside your game directory. The plugin dll file should end up inside the BepInEx/plugins folder. Overwrite if asked.
+4. Start character maker. You should see a new checkbox in the bottom right corner.
 5. You can move the bar by moving the camera.
 
 *Note:* The height is measured from the character's origin point, which is almost always bottom of the feet. If you use ABMX to scale the feet, then this might stop being accurate. In that case check the 0 point and adjust your measurements as needed.
