@@ -191,7 +191,7 @@ namespace HeightBar
 #endif
 
             var value = _useFeet.Value
-                ? (_barObject.transform.localPosition.y * Ratio * 0.0328084f).ToString("F2") + "feet"
+                ? (_barObject.transform.localPosition.y * Ratio * 0.0328084f).ToString("F2") + " feet"
                 : (_barObject.transform.localPosition.y * Ratio).ToString("F1") + "cm";
 
             ShadowAndOutline.DrawOutline(_labelRect, value, _labelStyle, Color.white, Color.black, 1);
