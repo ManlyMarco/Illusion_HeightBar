@@ -102,7 +102,7 @@ namespace HeightBar
 #if KK
             if (camControl != null && camControl.targetObj != null)
                 _targetObject = camControl.targetObj;
-#elif AI || EC
+#elif AI || EC || HS2
             if (camControl != null && camControl.targetTex != null)
                 _targetObject = camControl.targetTex;
 #endif
@@ -122,7 +122,7 @@ namespace HeightBar
 #elif EC
             _barObject.transform.localScale = new Vector3(0.3f, 0.005f, 0.3f);
             _barObject.layer = 10;
-#elif AI
+#elif AI || HS2
             _barObject.transform.localScale = new Vector3(3f, 0.02f, 3f);
             _barObject.layer = 10;
 #endif
