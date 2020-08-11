@@ -190,9 +190,10 @@ namespace HeightBar
             _labelRect.y = (int)((Screen.height - vector.y) / 10) * 10;
 #endif
 
+            var cmHeight = _barObject.transform.localPosition.y * Ratio;
             var value = _useFeet.Value
-                ? Math.Floor(_barObject.transform.localPosition.y * Ratio * 0.0328084f).ToString("F2") + " ft " + (_barObject.transform.localPosition.y * Ratio * 0.3937007f % 12).ToString("F3") + " in"
-                : (_barObject.transform.localPosition.y * Ratio).ToString("F1") + "cm";
+                ? $"{Mathf.FloorToInt(cmHeight * 0.0328084f)} ft {cmHeight * 0.3937007f % 12:F2} in"
+                : cmHeight.ToString("F1") + "cm";
 
             ShadowAndOutline.DrawOutline(_labelRect, value, _labelStyle, Color.white, Color.black, 1);
         }
