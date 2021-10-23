@@ -99,7 +99,7 @@ namespace HeightBar
             _mainCamera = Camera.main;
 
             var camControl = _mainCamera.GetComponent<CameraControl_Ver2>();
-#if KK
+#if KK || KKS
             if (camControl != null && camControl.targetObj != null)
                 _targetObject = camControl.targetObj;
 #elif AI || EC || HS2
@@ -119,7 +119,7 @@ namespace HeightBar
 #if KK
             _barObject.transform.localScale = new Vector3(0.3f, 0.005f, 0.3f);
             _barObject.layer = 12;
-#elif EC
+#elif EC || KKS
             _barObject.transform.localScale = new Vector3(0.3f, 0.005f, 0.3f);
             _barObject.layer = 10;
 #elif AI || HS2
@@ -181,7 +181,7 @@ namespace HeightBar
             _barObject.transform.position = barPosition;
 
             var vector = _mainCamera.WorldToScreenPoint(barPosition + new Vector3(0.1f, 0f));
-#if KK || EC
+#if KK || EC || KKS
             _labelRect.x = vector.x;
             _labelRect.y = Screen.height - vector.y;
 #else

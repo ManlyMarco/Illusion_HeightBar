@@ -13,8 +13,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EC_HeightBar", "EC_HeightBa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HS2_HeightBar", "HS2_HeightBar\HS2_HeightBar.csproj", "{7A78E2A2-04F9-4FAB-91FD-F87AB7BCF47A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KKS_HeightBar", "KKS_HeightBar\KKS_HeightBar.csproj", "{1A54FA70-A67A-4D83-8894-0D406DE6E4A2}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Shared\Shared.projitems*{1a54fa70-a67a-4d83-8894-0d406de6e4a2}*SharedItemsImports = 4
 		Shared\Shared.projitems*{43881570-2458-41a8-86c7-e14d978f3cb4}*SharedItemsImports = 4
 		Shared\Shared.projitems*{64aeec34-c5a2-4e74-988c-6de26a63d9ed}*SharedItemsImports = 4
 		Shared\Shared.projitems*{762bc9ff-86cc-4029-a141-77e972126efe}*SharedItemsImports = 4
@@ -42,6 +45,10 @@ Global
 		{7A78E2A2-04F9-4FAB-91FD-F87AB7BCF47A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7A78E2A2-04F9-4FAB-91FD-F87AB7BCF47A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7A78E2A2-04F9-4FAB-91FD-F87AB7BCF47A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1A54FA70-A67A-4D83-8894-0D406DE6E4A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A54FA70-A67A-4D83-8894-0D406DE6E4A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A54FA70-A67A-4D83-8894-0D406DE6E4A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A54FA70-A67A-4D83-8894-0D406DE6E4A2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
