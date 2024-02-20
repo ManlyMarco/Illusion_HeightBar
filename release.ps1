@@ -1,5 +1,5 @@
 # Config ------------------
-$gamePrefixes = @("KK", "AI", "EC", "HS2")
+$gamePrefixes = @("KK_", "KKS_", "AI_", "EC_", "HS2_")
 $plugName = "HeightBar"
 
 # Env setup ---------------
@@ -24,7 +24,7 @@ function CreateZip ($element)
 
     $ver = "v" + (Get-ChildItem -Path ($copy) -Filter "*.dll" -Recurse -Force)[0].VersionInfo.FileVersion.ToString()
 
-    Compress-Archive -Path $copy -Force -CompressionLevel "Optimal" -DestinationPath ($dir + "out\" + $element + "_" + $plugName + "_" + $ver + ".zip")
+    Compress-Archive -Path $copy -Force -CompressionLevel "Optimal" -DestinationPath ($dir + "out\" + $element + $plugName + "_" + $ver + ".zip")
 }
 
 foreach ($gamePrefix in $gamePrefixes) 
