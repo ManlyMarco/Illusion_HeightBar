@@ -95,16 +95,9 @@ namespace HeightBar
 
         private string CentimetresToFeet(float centimetres) {
             float feetAndInches = centimetres * 0.0328084f;
-            //int feet = (int) Math.Truncate(feetAndInches);
-            //int inches = (int) Math.Truncate((feetAndInches - feet) * 12);
+            int feet = (int) Math.Truncate(feetAndInches);
 
-            //Console.WriteLine($"{centimetres}cm");
-            //Console.WriteLine($"{feetAndInches}'");
-            //Console.WriteLine($"{feet}'");
-            //Console.WriteLine($"{inches}\"");
-
-            //return $"{feet}' {inches}\"";
-            return $"{(int)Math.Truncate(feetAndInches)}' {(int)Math.Truncate((feetAndInches - feet) * 12)}\"";
+            return $"{feet}' {(int)Math.Truncate((feetAndInches - feet) * 12)}\"";
         }
 
         private void MakerAPI_Enter(object sender, RegisterCustomControlsEvent e)
