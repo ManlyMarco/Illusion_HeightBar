@@ -93,6 +93,13 @@ namespace HeightBar
             }
         }
 
+        private string CentimetresToFeet(float centimetres) {
+            float feetAndInches = centimetres * 0.0328084f;
+            int feet = (int) Math.Truncate(feetAndInches);
+
+            return $"{feet}' {(int)Math.Truncate((feetAndInches - feet) * 12)}\"";
+        }
+
         private void MakerAPI_Enter(object sender, RegisterCustomControlsEvent e)
         {
             _showBar = false;
@@ -192,7 +199,7 @@ namespace HeightBar
 
             var cmHeight = _barObject.transform.localPosition.y * Ratio;
             var value = _useFeet.Value
-                ? $"{Mathf.FloorToInt(cmHeight * 0.0328084f)} ft {cmHeight * 0.3937007f % 12:F2} in"
+                ? CentimetresToFeet(cmHeight)
                 : cmHeight.ToString("F1") + "cm";
 
             ShadowAndOutline.DrawOutline(_labelRect, value, _labelStyle, Color.white, Color.black, 1);
