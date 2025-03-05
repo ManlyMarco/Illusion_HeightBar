@@ -14,7 +14,7 @@ namespace HeightBar
     [BepInPlugin("HeightBar", "HeightBarX", Version)]
     public partial class HeightBar
     {
-        internal const string Version = "3.4";
+        internal const string Version = "3.4.1";
 
         private readonly GUIStyle _labelStyle = new GUIStyle();
         private Rect _labelRect = new Rect(400f, 400f, 100f, 100f);
