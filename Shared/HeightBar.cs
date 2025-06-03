@@ -31,7 +31,7 @@ namespace HeightBar
         private SidebarToggle _sidebarToggle;
 
         private ConfigEntry<bool> _showZeroBar;
-        private ConfigEntry<bool> _useFeet;
+        private ConfigEntry<DisplayUnits> _displayUnit;
         private ConfigEntry<float> _barAlpha;
         private ConfigEntry<float> _zeroBarAlpha;
 
@@ -56,7 +56,8 @@ namespace HeightBar
         {
             _barHotkey = Config.Bind("General", "Toggle height measure bar", KeyboardShortcut.Empty, "Hotkey to toggle the height measurement bar in maker.");
             _showZeroBar = Config.Bind("General", "Show floor bar at character`s feet", true, "Shows the position of the floor. Helps prevent floating characters when using yellow sliders.");
-            _useFeet = Config.Bind("General", "Use freedom units", false, "A foot to the face.");
+
+            _displayUnit = Config.Bind("General", "Units", DisplayUnits.Both, "Allows you the change the units in which height is displayed.");
 
             _barAlpha = Config.Bind("Appearance", "Opacity of the measuring bar", 0.6f, new ConfigDescription("", new AcceptableValueRange<float>(0, 1)));
             _zeroBarAlpha = Config.Bind("Appearance", "Opacity of the floor bar", 0.5f, new ConfigDescription("", new AcceptableValueRange<float>(0, 1)));
@@ -93,11 +94,12 @@ namespace HeightBar
             }
         }
 
-        private string CentimetresToFeet(float centimetres) {
+        private string CentimetresToFeet(float centimetres)
+        {
             float feetAndInches = centimetres * 0.0328084f;
             int feet = (int) Math.Truncate(feetAndInches);
 
-            return $"{feet}' {(int)Math.Truncate((feetAndInches - feet) * 12)}\"";
+            return $"{feet}' {(feetAndInches - feet) * 12:F1}\"";
         }
 
         private void MakerAPI_Enter(object sender, RegisterCustomControlsEvent e)
@@ -198,9 +200,9 @@ namespace HeightBar
 #endif
 
             var cmHeight = _barObject.transform.localPosition.y * Ratio;
-            var value = _useFeet.Value
+            var value = _displayUnit.Value == DisplayUnits.Freedom
                 ? CentimetresToFeet(cmHeight)
-                : cmHeight.ToString("F1") + "cm";
+                : _displayUnit.Value == DisplayUnits.Metric ? cmHeight.ToString("F1") + "cm" : $"{cmHeight:F1}cm\n{CentimetresToFeet(cmHeight)}";
 
             ShadowAndOutline.DrawOutline(_labelRect, value, _labelStyle, Color.white, Color.black, 1);
         }
