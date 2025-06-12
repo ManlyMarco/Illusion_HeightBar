@@ -29,7 +29,7 @@ namespace HeightBar
         private Transform _targetObject;
         private Vector3 _differentialPoint = Vector3.zero;
 
-        private Material _barMaterial;
+        private Material _heightBarMaterial;
         private Material _widthBarMaterial;
         private Material _zeroBarMaterial;
         private SidebarToggle _sidebarHeightToggle;
@@ -37,12 +37,14 @@ namespace HeightBar
 
         private ConfigEntry<bool> _showZeroBar;
         private ConfigEntry<DisplayUnits> _displayUnit;
-        private ConfigEntry<float> _barAlpha;
-        private ConfigEntry<float> _zeroBarAlpha;
+        private ConfigEntry<Color> _heightBarColor;
+        private ConfigEntry<Color> _widthBarColor;
+        private ConfigEntry<Color> _zeroBarColor;
 
         private bool _showHeightBar;
         private bool _showWidthBar;
-        private ConfigEntry<KeyboardShortcut> _barHotkey;
+        private ConfigEntry<KeyboardShortcut> _heightBarHotkey;
+        private ConfigEntry<KeyboardShortcut> _widthBarHotkey;
         private ConfigEntry<KeyboardShortcut> _differentialHotkey;
 
         private bool _forceHideBars;
@@ -61,25 +63,34 @@ namespace HeightBar
 
         private void Awake()
         {
-            _barHotkey = Config.Bind("General", "Toggle height measure bar", KeyboardShortcut.Empty, "Hotkey to toggle the height measurement bar in maker.");
+            _heightBarHotkey = Config.Bind("General", "Toggle height measure bar", KeyboardShortcut.Empty, "Hotkey to toggle the height measurement bar in maker.");
+            _widthBarHotkey = Config.Bind("General", "Toggle width measure bar", KeyboardShortcut.Empty, "Hotkey to toggle the width measurement bar in maker.");
             _differentialHotkey = Config.Bind("General", "Set Differential Measurement Point", KeyboardShortcut.Empty, "Hotkey to set a point for differential measurements.");
             _showZeroBar = Config.Bind("General", "Show floor bar at character`s feet", true, "Shows the position of the floor. Helps prevent floating characters when using yellow sliders.");
 
             _displayUnit = Config.Bind("General", "Units", DisplayUnits.Both, "Allows you the change the units in which height is displayed.");
 
-            _barAlpha = Config.Bind("Appearance", "Opacity of the measuring bar", 0.6f, new ConfigDescription("", new AcceptableValueRange<float>(0, 1)));
-            _zeroBarAlpha = Config.Bind("Appearance", "Opacity of the floor bar", 0.5f, new ConfigDescription("", new AcceptableValueRange<float>(0, 1)));
+            _heightBarColor = Config.Bind("Appearance", "Color of the height measuring bar", new Color(0,0,0,0.6f));
+            _widthBarColor = Config.Bind("Appearance", "Color of the width measuring bar", new Color(0, 0, 0, 0.6f));
 
-            _barAlpha.SettingChanged += delegate
+            _zeroBarColor = Config.Bind("Appearance", "Color of the floor bar", new Color(0, 0, 0, 0.5f));
+
+            _heightBarColor.SettingChanged += delegate
             {
-                if (_barMaterial != null)
-                    _barMaterial.color = new Color(0, 0, 0, _barAlpha.Value);
+                if (_heightBarMaterial != null)
+                    _heightBarMaterial.color = _heightBarColor.Value;
             };
 
-            _zeroBarAlpha.SettingChanged += delegate
+            _widthBarColor.SettingChanged += delegate
+            {
+                if (_widthBarColor != null)
+                    _widthBarMaterial.color = _widthBarColor.Value;
+            };
+
+            _zeroBarColor.SettingChanged += delegate
             {
                 if (_zeroBarMaterial != null)
-                    _zeroBarMaterial.color = new Color(0, 0, 0, _zeroBarAlpha.Value);
+                    _zeroBarMaterial.color = _zeroBarColor.Value;
             };
 
             _showZeroBar.SettingChanged += delegate
@@ -160,14 +171,14 @@ namespace HeightBar
             _zeroBarObject = Instantiate(_heightBarObject);
             _zeroBarObject.name = "Floor bar indicator";
 
-            _barMaterial = _heightBarObject.GetComponent<Renderer>().material;
-            _barMaterial.color = new Color(0, 0, 0, _barAlpha.Value);
+            _heightBarMaterial = _heightBarObject.GetComponent<Renderer>().material;
+            _heightBarMaterial.color = _heightBarColor.Value;
 
             _widthBarMaterial = _widthBarObject.GetComponent<Renderer>().material;
-            _widthBarMaterial.color = new Color(0, 0, 0, _barAlpha.Value);
+            _widthBarMaterial.color = _widthBarColor.Value;
 
             _zeroBarMaterial = _zeroBarObject.GetComponent<Renderer>().material;
-            _zeroBarMaterial.color = new Color(0, 0, 0, _zeroBarAlpha.Value);
+            _zeroBarMaterial.color = _zeroBarColor.Value;
 
             _heightBarObject.SetActive(false);
             _widthBarObject.SetActive(false);
@@ -190,7 +201,7 @@ namespace HeightBar
 
             Destroy(_heightBarObject);
             _heightBarObject = null;
-            _barMaterial = null;
+            _heightBarMaterial = null;
 
             Destroy(_zeroBarObject);
             _zeroBarObject = null;
@@ -205,7 +216,8 @@ namespace HeightBar
         {
             if (_heightBarObject != null && _widthBarObject != null)
             {
-                if (_barHotkey.Value.IsDown()) _showHeightBar = !_showHeightBar;
+                if (_heightBarHotkey.Value.IsDown()) _showHeightBar = !_showHeightBar;
+                if (_widthBarHotkey.Value.IsDown()) _showWidthBar = !_showWidthBar;
                 var visible = MakerAPI.IsInterfaceVisible() && !ForceHideBars;
                 _zeroBarObject.SetActiveIfDifferent(visible && _showZeroBar.Value);
                 _heightBarObject.SetActiveIfDifferent(visible && _showHeightBar);
@@ -217,6 +229,7 @@ namespace HeightBar
                     if (_differentialHotkey.Value.IsDown())
                     {
                         _differentialPoint = _differentialPoint == Vector3.zero ? _targetObject.position : Vector3.zero;
+                        _zeroBarObject.transform.position = new Vector3(_differentialPoint.x, _differentialPoint.y, 0);
                     }
                 }
             }
@@ -224,14 +237,16 @@ namespace HeightBar
 
         private void OnGUI()
         {
+            var textColor = _differentialPoint != Vector3.zero ? Color.yellow : Color.white;
+
             if (_heightBarObject != null && _heightBarObject.activeSelf)
-                UpdateHeightBar();
+                UpdateHeightBar(textColor);
 
             if (_widthBarObject != null && _widthBarObject.activeSelf)
-                UpdateWidthBar();
+                UpdateWidthBar(textColor);
         }
 
-        private void UpdateHeightBar()
+        private void UpdateHeightBar(Color textColor)
         {
             var barPosition = _heightBarObject.transform.position;
             barPosition = new Vector3(barPosition.x, _targetObject.position.y, barPosition.z);
@@ -252,10 +267,10 @@ namespace HeightBar
                 ? CentimetresToFeet(cmHeight)
                 : _displayUnit.Value == DisplayUnits.Metric ? cmHeight.ToString("F1") + "cm" : $"{cmHeight:F1}cm\n{CentimetresToFeet(cmHeight)}";
 
-            ShadowAndOutline.DrawOutline(_labelRect, value, _labelStyle, Color.white, Color.black, 1);
+            ShadowAndOutline.DrawOutline(_labelRect, value, _labelStyle, textColor, Color.black, 1);
         }
 
-        private void UpdateWidthBar()
+        private void UpdateWidthBar(Color textColor)
         {
             var barPosition = _widthBarObject.transform.position;
             barPosition = new Vector3(_targetObject.position.x, _targetObject.position.y, barPosition.z);
@@ -276,7 +291,7 @@ namespace HeightBar
                 ? $"{CentimetresToInches(cmHeight):F2}\""
                 : _displayUnit.Value == DisplayUnits.Metric ? cmHeight.ToString("F1") + "cm" : $"{cmHeight:F1}cm\n{CentimetresToInches(cmHeight)}";
 
-            ShadowAndOutline.DrawOutline(_labelWidthRect, value, _labelStyle, Color.white, Color.black, 1);
+            ShadowAndOutline.DrawOutline(_labelWidthRect, value, _labelStyle, textColor, Color.black, 1);
         }
     }
 }
