@@ -246,13 +246,14 @@ namespace HeightBar
             if (_heightBarHotkey.Value.IsDown()) _showHeightBar = !_showHeightBar;
             if (_widthBarHotkey.Value.IsDown()) _showWidthBar = !_showWidthBar;
             var visible = MakerAPI.IsInterfaceVisible() && !ForceHideBars;
-            _zeroHeightBarObject.SetActiveIfDifferent(visible && _showZeroHeightBar.Value);
-            _zeroWidthBarObject.SetActiveIfDifferent(visible && _showZeroWidthBar.Value);
             _heightBarObject.SetActiveIfDifferent(visible && _showHeightBar);
             _widthBarObject.SetActiveIfDifferent(visible && _showWidthBar);
 
+            _zeroHeightBarObject.SetActiveIfDifferent(visible && _showZeroHeightBar.Value);
+            _zeroWidthBarObject.SetActiveIfDifferent(visible && _showZeroWidthBar.Value && _showWidthBar);
 
-            if (_heightBarObject.activeSelf || _widthBarObject.activeSelf)
+
+            if (_heightBarObject.activeSelf || _widthBarObject.activeSelf || _differentialPoint != Vector3.zero)
             {
                 if (_differentialHotkey.Value.IsDown())
                 {
