@@ -24,22 +24,26 @@ namespace HeightBar
 
         private GameObject _heightBarObject;
         private GameObject _widthBarObject;
-        private GameObject _zeroBarObject;
+        private GameObject _zeroHeightBarObject;
+        private GameObject _zeroWidthBarObject;
 
         private Transform _targetObject;
         private Vector3 _differentialPoint = Vector3.zero;
 
         private Material _heightBarMaterial;
         private Material _widthBarMaterial;
-        private Material _zeroBarMaterial;
+        private Material _zeroHeightBarMaterial;
+        private Material _zeroWidthBarMaterial;
         private SidebarToggle _sidebarHeightToggle;
         private SidebarToggle _sidebarWidthToggle;
 
-        private ConfigEntry<bool> _showZeroBar;
+        private ConfigEntry<bool> _showZeroHeightBar;
+        private ConfigEntry<bool> _showZeroWidthBar;
         private ConfigEntry<DisplayUnits> _displayUnit;
         private ConfigEntry<Color> _heightBarColor;
         private ConfigEntry<Color> _widthBarColor;
-        private ConfigEntry<Color> _zeroBarColor;
+        private ConfigEntry<Color> _zeroHeightBarColor;
+        private ConfigEntry<Color> _zeroWidthBarColor;
 
         private bool _showHeightBar;
         private bool _showWidthBar;
@@ -66,14 +70,17 @@ namespace HeightBar
             _heightBarHotkey = Config.Bind("General", "Toggle height measure bar", KeyboardShortcut.Empty, "Hotkey to toggle the height measurement bar in maker.");
             _widthBarHotkey = Config.Bind("General", "Toggle width measure bar", KeyboardShortcut.Empty, "Hotkey to toggle the width measurement bar in maker.");
             _differentialHotkey = Config.Bind("General", "Set Differential Measurement Point", KeyboardShortcut.Empty, "Hotkey to set a point for differential measurements.");
-            _showZeroBar = Config.Bind("General", "Show floor bar at character`s feet", true, "Shows the position of the floor. Helps prevent floating characters when using yellow sliders.");
+
+            _showZeroHeightBar = Config.Bind("General", "Show floor bar at character`s feet", true, "Shows the position of the floor. Helps prevent floating characters when using yellow sliders.");
+            _showZeroWidthBar = Config.Bind("General", "Show bar at zero width.", true, "Shows the position of the zero point of width.");
 
             _displayUnit = Config.Bind("General", "Units", DisplayUnits.Both, "Allows you the change the units in which height is displayed.");
 
             _heightBarColor = Config.Bind("Appearance", "Color of the height measuring bar", new Color(0,0,0,0.6f));
             _widthBarColor = Config.Bind("Appearance", "Color of the width measuring bar", new Color(0, 0, 0, 0.6f));
 
-            _zeroBarColor = Config.Bind("Appearance", "Color of the floor bar", new Color(0, 0, 0, 0.5f));
+            _zeroHeightBarColor = Config.Bind("Appearance", "Color of the floor bar", new Color(0, 0, 0, 0.5f));
+            _zeroWidthBarColor = Config.Bind("Appearance", "Color of the zero width bar", new Color(0, 0, 0, 0.5f));
 
             _heightBarColor.SettingChanged += delegate
             {
@@ -87,16 +94,22 @@ namespace HeightBar
                     _widthBarMaterial.color = _widthBarColor.Value;
             };
 
-            _zeroBarColor.SettingChanged += delegate
+            _zeroHeightBarColor.SettingChanged += delegate
             {
-                if (_zeroBarMaterial != null)
-                    _zeroBarMaterial.color = _zeroBarColor.Value;
+                if (_zeroHeightBarMaterial != null)
+                    _zeroHeightBarMaterial.color = _zeroHeightBarColor.Value;
             };
 
-            _showZeroBar.SettingChanged += delegate
+            _showZeroHeightBar.SettingChanged += delegate
             {
-                if (_zeroBarObject != null)
-                    _zeroBarObject.SetActive(_showZeroBar.Value);
+                if (_zeroHeightBarObject != null)
+                    _zeroHeightBarObject.SetActive(_showZeroHeightBar.Value);
+            };
+
+            _zeroWidthBarColor.SettingChanged += delegate
+            {
+                if (_zeroWidthBarMaterial != null)
+                    _zeroWidthBarMaterial.color = _zeroWidthBarColor.Value;
             };
 
             _labelStyle.fontSize = 20;
@@ -129,7 +142,7 @@ namespace HeightBar
         private void MakerAPI_Enter(object sender, RegisterCustomControlsEvent e)
         {
             _showHeightBar = false;
-            _showHeightBar = false;
+            _showWidthBar = false;
             _differentialPoint = Vector3.zero;
             _mainCamera = Camera.main;
 
@@ -168,8 +181,11 @@ namespace HeightBar
             _widthBarObject.name = "Width bar indicator";
             _widthBarObject.transform.localEulerAngles = new Vector3(0, 0, 90);
 
-            _zeroBarObject = Instantiate(_heightBarObject);
-            _zeroBarObject.name = "Floor bar indicator";
+            _zeroHeightBarObject = Instantiate(_heightBarObject);
+            _zeroHeightBarObject.name = "Height floor bar indicator";
+
+            _zeroWidthBarObject = Instantiate(_widthBarObject);
+            _zeroWidthBarObject.name = "Width floor bar indicator";
 
             _heightBarMaterial = _heightBarObject.GetComponent<Renderer>().material;
             _heightBarMaterial.color = _heightBarColor.Value;
@@ -177,12 +193,16 @@ namespace HeightBar
             _widthBarMaterial = _widthBarObject.GetComponent<Renderer>().material;
             _widthBarMaterial.color = _widthBarColor.Value;
 
-            _zeroBarMaterial = _zeroBarObject.GetComponent<Renderer>().material;
-            _zeroBarMaterial.color = _zeroBarColor.Value;
+            _zeroHeightBarMaterial = _zeroHeightBarObject.GetComponent<Renderer>().material;
+            _zeroHeightBarMaterial.color = _zeroHeightBarColor.Value;
+
+            _zeroWidthBarMaterial = _zeroWidthBarObject.GetComponent<Renderer>().material;
+            _zeroWidthBarMaterial.color = _zeroWidthBarColor.Value;
 
             _heightBarObject.SetActive(false);
             _widthBarObject.SetActive(false);
-            _zeroBarObject.SetActive(_showZeroBar.Value);
+            _zeroHeightBarObject.SetActive(_showZeroHeightBar.Value);
+            _zeroHeightBarObject.SetActive(_showZeroWidthBar.Value);
 
             ab.Unload(false);
 
@@ -203,34 +223,43 @@ namespace HeightBar
             _heightBarObject = null;
             _heightBarMaterial = null;
 
-            Destroy(_zeroBarObject);
-            _zeroBarObject = null;
-            _zeroBarMaterial = null;
+            Destroy(_zeroHeightBarObject);
+            _zeroHeightBarObject = null;
+            _zeroHeightBarMaterial = null;
 
             Destroy(_widthBarObject);
             _widthBarObject = null;
             _widthBarMaterial = null;
+
+            Destroy(_zeroWidthBarObject);
+            _zeroWidthBarObject = null;
+            _zeroWidthBarMaterial = null;
         }
 
         private void Update()
         {
-            if (_heightBarObject != null && _widthBarObject != null)
+            if (_heightBarObject == null || _widthBarObject == null)
             {
-                if (_heightBarHotkey.Value.IsDown()) _showHeightBar = !_showHeightBar;
-                if (_widthBarHotkey.Value.IsDown()) _showWidthBar = !_showWidthBar;
-                var visible = MakerAPI.IsInterfaceVisible() && !ForceHideBars;
-                _zeroBarObject.SetActiveIfDifferent(visible && _showZeroBar.Value);
-                _heightBarObject.SetActiveIfDifferent(visible && _showHeightBar);
-                _widthBarObject.SetActiveIfDifferent(visible && _showWidthBar);
+                return;
+            }
+
+            if (_heightBarHotkey.Value.IsDown()) _showHeightBar = !_showHeightBar;
+            if (_widthBarHotkey.Value.IsDown()) _showWidthBar = !_showWidthBar;
+            var visible = MakerAPI.IsInterfaceVisible() && !ForceHideBars;
+            _zeroHeightBarObject.SetActiveIfDifferent(visible && _showZeroHeightBar.Value);
+            _zeroWidthBarObject.SetActiveIfDifferent(visible && _showZeroWidthBar.Value);
+            _heightBarObject.SetActiveIfDifferent(visible && _showHeightBar);
+            _widthBarObject.SetActiveIfDifferent(visible && _showWidthBar);
 
 
-                if (_heightBarObject.activeSelf || _widthBarObject.activeSelf)
+            if (_heightBarObject.activeSelf || _widthBarObject.activeSelf)
+            {
+                if (_differentialHotkey.Value.IsDown())
                 {
-                    if (_differentialHotkey.Value.IsDown())
-                    {
-                        _differentialPoint = _differentialPoint == Vector3.zero ? _targetObject.position : Vector3.zero;
-                        _zeroBarObject.transform.position = new Vector3(_differentialPoint.x, _differentialPoint.y, 0);
-                    }
+                    _differentialPoint = _differentialPoint == Vector3.zero ? _targetObject.position : Vector3.zero;
+
+                    _zeroHeightBarObject.transform.position = new Vector3(0, _differentialPoint.y, 0);
+                    _zeroWidthBarObject.transform.position = new Vector3(_differentialPoint.x, 0, 0);
                 }
             }
         }
@@ -275,6 +304,12 @@ namespace HeightBar
             var barPosition = _widthBarObject.transform.position;
             barPosition = new Vector3(_targetObject.position.x, _targetObject.position.y, barPosition.z);
             _widthBarObject.transform.position = barPosition;
+
+            if (_zeroWidthBarObject.activeSelf)
+            {
+                _zeroWidthBarObject.transform.position =
+                    new Vector3(_differentialPoint.x, barPosition.y, barPosition.z);
+            }
 
             var vector = _mainCamera.WorldToScreenPoint(barPosition + new Vector3(0.0f, -0.1f));
 #if KK || EC || KKS
