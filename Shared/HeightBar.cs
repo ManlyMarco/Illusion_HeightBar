@@ -11,10 +11,12 @@ using UnityEngine;
 
 namespace HeightBar
 {
-    [BepInPlugin("HeightBar", "HeightBarX", Version)]
+    [BepInPlugin(GUID, PluginName, Version)]
     public partial class HeightBar
     {
-        internal const string Version = "3.4.1";
+        public const string Version = "3.4.1";
+        public const string GUID = "HeightBar";
+        public const string PluginName = "HeightBarX";
 
         private readonly GUIStyle _labelStyle = new GUIStyle();
         private Rect _labelRect = new Rect(400f, 400f, 100f, 100f);
