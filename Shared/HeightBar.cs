@@ -20,7 +20,7 @@ namespace HeightBar
 #endif
     public class HeightBar : BaseUnityPlugin
     {
-        public const string Version = "3.4.1";
+        public const string Version = "4.0";
         public const string GUID = "HeightBar";
         public const string PluginName = "HeightBarX";
 
