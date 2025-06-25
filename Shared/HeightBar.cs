@@ -340,7 +340,7 @@ namespace HeightBar
 
             var cmHeight = -((_widthBarObject.transform.localPosition.x - _differentialPoint.x) * Ratio);
             var value = _displayUnit.Value == DisplayUnits.Freedom
-                ? $"{CentimetresToInches(cmHeight):F2}\""
+                ? $"{CentimetresToInches(cmHeight)}\""
                 : _displayUnit.Value == DisplayUnits.Metric ? cmHeight.ToString("F1") + "cm" : $"{cmHeight:F1}cm\n{CentimetresToInches(cmHeight)}";
 
             ShadowAndOutline.DrawOutline(_labelWidthRect, value, _labelStyle, textColor, Color.black, 1);
