@@ -3,6 +3,7 @@ using System.Reflection;
 using BepInEx;
 using BepInEx.Configuration;
 using Illusion.Extensions;
+using KKAPI;
 using KKAPI.Maker;
 using KKAPI.Maker.UI.Sidebar;
 using KKAPI.Utilities;
@@ -12,11 +13,24 @@ using UnityEngine;
 namespace HeightBar
 {
     [BepInPlugin(GUID, PluginName, Version)]
-    public partial class HeightBar
+    [BepInDependency(KoikatuAPI.GUID, KoikatuAPI.VersionConst)]
+    [BepInProcess(KoikatuAPI.GameProcessName)]
+#if KK
+    [BepInProcess(KoikatuAPI.GameProcessNameSteam)]
+#endif
+    public class HeightBar : BaseUnityPlugin
     {
         public const string Version = "3.4.1";
         public const string GUID = "HeightBar";
         public const string PluginName = "HeightBarX";
+
+#if KK || KKS || EC
+        private readonly float Ratio = 103.092781f;
+#elif AI || HS2
+        private readonly float Ratio = 10.5f;
+#else
+        TODO FIX
+#endif
 
         private readonly GUIStyle _labelStyle = new GUIStyle();
         private Rect _labelRect = new Rect(400f, 400f, 100f, 100f);
@@ -78,7 +92,7 @@ namespace HeightBar
 
             _displayUnit = Config.Bind("General", "Units", DisplayUnits.Both, "Allows you the change the units in which height is displayed.");
 
-            _heightBarColor = Config.Bind("Appearance", "Color of the height measuring bar", new Color(0,0,0,0.6f));
+            _heightBarColor = Config.Bind("Appearance", "Color of the height measuring bar", new Color(0, 0, 0, 0.6f));
             _widthBarColor = Config.Bind("Appearance", "Color of the width measuring bar", new Color(0, 0, 0, 0.6f));
 
             _zeroHeightBarColor = Config.Bind("Appearance", "Color of the floor bar", new Color(0, 0, 0, 0.5f));
